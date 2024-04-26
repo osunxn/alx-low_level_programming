@@ -1,42 +1,33 @@
 #include "main.h"
 
 /**
- * create_file - Creates a file with the given filename and writes the content.
- * @filename: The name of the file to create.
- * @text_content: The content to write to the file (a NULL-terminated string).
+ * create_file - Creates a file.
+ * @filename: A pointer to the name of the file to create.
+ * @text_content: A pointer to a string to write to the file.
  *
- * Return: 1 on success, -1 on failure.
+ * Return: If the function fails - -1.
+ *         Otherwise - 1.
  */
 int create_file(const char *filename, char *text_content)
 {
-int fdescriptor, contentwritten, wordslen = 0;
+	int o, w, len = 0;
 
-/* Check if filename is NULL and return -1 */
-if (filename == NULL)
-return (-1);
+	if (filename == NULL)
+		return (-1);
 
-/*Open the file in write-only mode with O_CREAT, O_WRONLY, and O_TRUNC flags*/
-/*Set file permissions to rw------- using S_IRUSR and S_IWUSR. */
-fdescriptor = open(filename, O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
-if (fdescriptor == -1)
-return (-1);
+	if (text_content != NULL)
+	{
+		for (len = 0; text_content[len];)
+			len++;
+	}
 
-/*If text_content is not NULL, calculate the length of*/
-/*the string and write the content to the file*/
-if (text_content != NULL)
-{
-while (text_content[wordslen] != '\0')
-wordslen++;
-contentwritten = write(fdescriptor, text_content, wordslen);
-/* Check if write was successful */
-if (contentwritten != wordslen)
-{
-close(fdescriptor);
-return (-1);
-}
-}
+	o = open(filename, O_CREAT | O_RDWR | O_TRUNC, 0600);
+	w = write(o, text_content, len);
 
-/* Close the file and return 1 to indicate success */
-close(fdescriptor);
-return (1);
+	if (o == -1 || w == -1)
+		return (-1);
+
+	close(o);
+
+	return (1);
 }
